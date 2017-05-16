@@ -161,6 +161,7 @@ def message_show():
 
 
 def get_info_persons_group(firstname , lastname):
+    GroupIDs = []
     connection = get_connection()
     cursor = connection.cursor()
     query = """ SELECT p.PersonID from Persons as p where  p.firstname = '%s' and p.lastname = '%s' ;"""
@@ -169,16 +170,25 @@ def get_info_persons_group(firstname , lastname):
     rows = cursor.fetchall()
     for row in rows:
         PersonID = row[0]
+    if len(rows) == 0 :
+        PersonID = ''
 
     query = """SELECT pg.GroupID from person_group as pg where pg.PersonID = '%s' ;"""  # noqa
     query = query % PersonID
     cursor.execute(query)
     rows = cursor.fetchall()
     for row in rows:
-        GroupID = row[0]
+        GroupIDs.append(row[0])
+    GroupIDs = map(int,GroupIDs)
+    GIDs = tuple(GroupIDs)
+    if len(rows)==1 :
+        GIDs = GIDs + ('',)
+    if len(rows)==0 :
+        GIDs = GIDs + ('','')
 
-    query = """SELECT p.firstname, p.lastname, g.groupname from Persons as p, Groups as g where p.PersonID= '%s' and g.GroupID = '%s' ;"""  # noqa
-    query = query % (PersonID,GroupID)
+    query = """SELECT p.firstname, p.lastname, g.groupname from Persons as p, Groups as g where p.PersonID= '%s' and g.GroupID IN %s ;"""  # noqa
+    query = query % (PersonID,GIDs)
+    print(query)
     cursor.execute(query)
 
     rows = cursor.fetchall()
@@ -186,6 +196,7 @@ def get_info_persons_group(firstname , lastname):
     connection.close()
 
 def get_info_group_member(groupname):
+    PersonIDs = []
     connection = get_connection()
     cursor = connection.cursor()
     print(groupname)
@@ -195,16 +206,26 @@ def get_info_group_member(groupname):
     rows = cursor.fetchall()
     for row in rows:
         GroupID = row[0]
+    if len(rows) == 0 :
+        GroupID = ''
         
     query = """SELECT pg.PersonID from person_group as pg where pg.GroupID = '%s' ;"""  # noqa
     query = query % GroupID
-    PersonID = cursor.execute(query)
+    print(query)
+    cursor.execute(query)
     rows = cursor.fetchall()
     for row in rows:
-        PersonID = row[0]
+        PersonIDs.append(row[0])
+    PersonIDs = map(int,PersonIDs)
+    PIDs = tuple(PersonIDs)
+    if len(rows)==1:
+        PIDs = PIDs + ('',)
+    if len(rows)==0 :
+        PIDs = PIDs + ('','')
 
-    query = """SELECT p.firstname, p.lastname, g.groupname from Persons as p, Groups as g where p.PersonID= '%s' and g.GroupID = '%s' ;"""  # noqa
-    query = query % (PersonID,GroupID)
+    query = """SELECT p.firstname, p.lastname, g.groupname from Persons as p, Groups as g where p.PersonID IN %s and g.GroupID = '%s' ;"""  # noqa
+    query = query % (PIDs,GroupID)
+    print(query)
     cursor.execute(query)
 
 
