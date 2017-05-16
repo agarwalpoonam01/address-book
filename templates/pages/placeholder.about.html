@@ -1,0 +1,50 @@
+{% extends 'layouts/main.html' %}
+{% block title %}About{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <h1>Address Book</h1>
+</div>
+
+<h4 class="lead page-header">Following actions can be performed under this Address book management system</h4>
+<p>
+
+<p class="lead">
+	<a href="{{ url_for('register') }}">
+		Create a new Person
+	</a>
+</p>
+<p class="lead">
+	<a href="{{ url_for('add_group') }}">
+		Create a new Group
+	</a>
+</p>
+<p class="lead">
+	<a href="{{ url_for('search_firstname') }}">
+		Search Person with firstname
+	</a>
+</p>
+<p class="lead">
+	<a href="{{ url_for('search_lastname') }}">
+		Search Person with lastname
+	</a>
+</p>
+<p class="lead">
+	<a href="{{ url_for('search_firstname_lastname') }}">
+		Search Person with firstname, lastname
+	</a>
+</p>
+<p class="lead">
+	<a href="{{ url_for('search_group') }}">
+		Search Person  with groupname
+	</a>
+</p>
+<p class="lead">
+	<a href="{{ url_for('search_person') }}">
+		Search group with Person's name
+	</a>
+
+</p>
+
+
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends 'layouts/form.html' %}
+
+{% block title %}
+Add User
+{% endblock %}
+{% block content %}
+{% block custom_style %}
+    <style type="text/css">
+      .center {
+    margin: auto;
+    width: 60%;
+    height: 60%;
+    border: 1px solid #73AD21;
+    padding: 10px;
+}
+    </style>
+  <form method="post" class="form">
+
+    <h3 class="form-heading">Search The Address Book with person's firstname <a href="{{ url_for('home') }}" title="Back to homepage"><i class="fa fa-home pull-right"></i></a></h3>
+
+    <div class="center">
+<b>
+
+Search:
+    {{ form.search3(class_ = 'form-control first-input', placeholder = form.search3.label.text, required = true, autofocus = False) }}
+Fisrtname:
+    {{ form.value(class_ = 'form-control first-input', placeholder = form.value.label.text, required = true, autofocus = true) }}
+</b>
+    <input type="submit" value="Search" class="btn btn-primary btn-lg btn-block"  >
+
+  </form>
+  </div>
+    {% endblock custom_style %}
+
+{% endblock %}
