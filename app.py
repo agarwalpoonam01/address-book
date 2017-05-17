@@ -7,7 +7,7 @@ from functools import wraps
 import flask_login_auth
 from forms import *
 import logging
-
+import re
 
 app = Flask(__name__)
 app.secret_key = 'F12Zr47j\3yX R~X@H!jmM]Lwf/,?KT'
@@ -43,8 +43,22 @@ def logout_requied(f):
 @app.route('/register', methods=['GET', 'POST'])
 @login_requied
 def register():
+
     form = RegisterForm(request.form)
     if request.method == 'POST':
+        rule_email = re.compile(r'(\w+[.|\w])*@(\w+[.])*\w+')
+        if not rule_email.search(form.email.data):
+            flash(
+                'ERROR! Please enter valid emailid'
+            )
+            return redirect(url_for('register'))
+        rule = re.compile(r'(^[+0-9]{1,3})*([0-9]{10,11}$)')
+        if not rule.search(form.phonenumber.data):
+            flash(
+                'ERROR! Please enter valid phone number in international number format  '\
+                'eg: +918888999900'
+            )
+            return redirect(url_for('register'))
         user = models.create_user(
             form.firstname.data, form.lastname.data, form.group.data,
             form.email.data,form.address.data,form.phonenumber.data, 
@@ -56,16 +70,19 @@ def register():
             )
             return redirect(url_for('register'))
         else:
-            return redirect(url_for('home'))
+            flash(
+                'INFO! Person added sucessfully! want to add another user..Please add it!'
+            )
+            return redirect(url_for('register'))
     return render_template('forms/register.html', form=form)
 
 
 @app.route('/', methods=['GET', 'POST'])
 @login_requied
 def home():
-    messages = models.message_show()
+    #messages = models.message_show()
     #redirect(url_for('login'))
-    return render_template('pages/placeholder.home.html', messages=messages, session=session) # noqa
+    return render_template('pages/placeholder.home.html', session=session) # noqa
 
 
 @app.route('/about')
@@ -184,7 +201,10 @@ def add_group():
             )
             return redirect(url_for('add_group'))
         else:
-            return redirect(url_for('home'))
+            flash(
+                'INFO! Group added sucessfully! want to add another group..Please add it'
+            )
+            return redirect(url_for('add_group'))
     return render_template('forms/add_group.html', form=form)
 
 @app.route('/index')
@@ -200,6 +220,14 @@ def index():
 def indexs():
     project = flask_login_auth.show_project(session['usersid'])
     session['project'] = project
+    if project ==1:
+        flash(
+            'ERROR! groupname or user already exists'
+        )
+    else:
+        flash(
+            'Group added sucessfully'
+        )
     return render_template('pages/placeholder.home.html', session=session)
 
 
